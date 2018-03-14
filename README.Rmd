@@ -5,46 +5,73 @@ output:
     variant: markdown_github
 ---
 
-#quicknews: r package for quick/multi-lingual web-based corpus creation
+#quicknews 
+##r package for quickly building multi-lingual web corpora via GoogleNews
 
-facilitates quick/easy web scraping of news sources, as a dataframe in text interchange format...
+This package performs two fairly straightforward functions:  
 
-The two web-based functions presented here more or less work in tandem. Both functions depend on functionality made available in the `boilerpipeR`, `XML`, and `RCurl` packages. 
+* It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
+* It extracts/scrapes article content from url included in metadata.
+
+The latter returns a data frame, which includes the metadata (for all successfully scraped texts), along with the full text for each article (represented as a single row), ie, a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe. 
+
+This data structure subsequently enables convenient corpus annotation via `spacyr` or `cleanNLP`.
+
+Package functionality is dependent on the `boilerpipeR`, `xml2`, and `RCurl` packages. 
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(tidyverse)
 library(quicknews)#devtools::install_github("jaytimm/quicknews")
-library(DT)
 ```
 
 
 ###qnews_get_meta()
 
-`qnews_get_meta` simply pulls metadata based on user-specified search paramaters from the GoogleNews RSS feed.  Here, we search for US-based business-related articles written in Spanish.
+`qnews_get_meta` retrieves metadata based on user-specified search paramaters from the GoogleNews RSS feed.  Below we search for US-based, business-related articles written in Spanish.
 
 ```{r}
 es_us_business_meta <- quicknews::qnews_get_meta  (language="es", country="us", type="topic", search='business')
 ```
+
+Additional country/language searches (that I know work) include US-English (en/us), Mexico-Spanish (es/mx), France-French (fr/fr), and Germany-German (de/de). Also, note that "es" here actually means "es-419", or Spanish spoken in Latin America.    
+
+Additional topics used in GoogleNews include Nation, World, Health, Science, Sports, Technology, and some others.  When the `type` parameter is set to "term", the `search` parameter can be set to anything.  When the `type` parameter is set to "topstories", the `search` parameter is ignored.
+
 
 Metadata include:
 ```{r echo=FALSE}
 colnames(es_us_business_meta)
 ```
 
-First six article titles:
+Article publication dates, sources, and titles:
 ```{r}
 es_us_business_meta%>%
   select(date:title)
 ```
 
 
+
 ###qnews_scrape_web()
 
-The second web-based function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`.  The function returns a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant dataframe, with each scraped text represented as a single row.  Metadata from output of `qnews_get_meta` are also included.
+The second function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`.  
 
 ```{r}
 es_us_business_corpus <- es_us_business_meta%>% 
   quicknews::qnews_scrape_web (link_var='link')
 ```
 
+
+So, not all of the articles retrieved from the RSS feed were successfully scraped.  Not all websites allow non-Google entities to scrape their sites.  
+```{r}
+nrow(es_us_business_corpus)
+```
+
+
+Example text from the corpus data frame:
+```{r}
+substr(es_us_business_corpus$text[1],1,500)
+```
+
+
+Again, output from `qnews_scrape_web` can be piped directly into corpus annotation functions made available in `cleanNLP` or `spacyr`.  
 
