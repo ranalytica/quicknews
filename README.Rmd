@@ -6,16 +6,15 @@ output:
 ---
 
 #quicknews 
-##r package for quickly building multi-lingual web corpora via GoogleNews
 
-This package performs two fairly straightforward functions:  
+An R package for quickly building multi-lingual web corpora via GoogleNews. The package performs two fairly straightforward functions:  
 
 * It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
 * It extracts/scrapes article content from url included in metadata.
 
 The latter returns a data frame, which includes the metadata (for all successfully scraped texts), along with the full text for each article (represented as a single row), ie, a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe. 
 
-This data structure subsequently enables convenient corpus annotation via `spacyr` or `cleanNLP`.
+The output can subsequently be annotated using `spacyr` or `cleanNLP`.
 
 Package functionality is dependent on the `boilerpipeR`, `xml2`, and `RCurl` packages. 
 
@@ -27,7 +26,7 @@ library(quicknews)#devtools::install_github("jaytimm/quicknews")
 
 ###qnews_get_meta()
 
-`qnews_get_meta` retrieves metadata based on user-specified search paramaters from the GoogleNews RSS feed.  Below we search for US-based, business-related articles written in Spanish.
+`qnews_get_meta` retrieves metadata based on user-specified search paramaters from the GoogleNews RSS feed.  Below we search for US-based, business-related articles written in Spanish. Each call to the RSS returns 20 items.
 
 ```{r}
 es_us_business_meta <- quicknews::qnews_get_meta  (language="es", country="us", type="topic", search='business')
@@ -37,13 +36,16 @@ Additional country/language searches (that I know work) include US-English (en/u
 
 Additional topics used in GoogleNews include Nation, World, Health, Science, Sports, Technology, and some others.  When the `type` parameter is set to "term", the `search` parameter can be set to anything.  When the `type` parameter is set to "topstories", the `search` parameter is ignored.
 
+In theory, larger corpora could be constructed by applying `qnews_get_meta` across multiple topics (and over time).
+
 
 Metadata include:
 ```{r echo=FALSE}
 colnames(es_us_business_meta)
 ```
 
-Article publication dates, sources, and titles:
+Article publication dates, sources, and titles: 
+
 ```{r}
 es_us_business_meta%>%
   select(date:title)
@@ -60,16 +62,10 @@ es_us_business_corpus <- es_us_business_meta%>%
   quicknews::qnews_scrape_web (link_var='link')
 ```
 
+Example text from our new corpus data frame is presented below. As can be noted, not all of the articles retrieved from the RSS feed (n=20) were successfully scraped.  Not all websites allow non-Google entities to scrape their sites.  
 
-So, not all of the articles retrieved from the RSS feed were successfully scraped.  Not all websites allow non-Google entities to scrape their sites.  
 ```{r}
-nrow(es_us_business_corpus)
-```
-
-
-Example text from the corpus data frame:
-```{r}
-substr(es_us_business_corpus$text[1],1,500)
+paste0(substr(es_us_business_corpus$text,1,55),"...")
 ```
 
 
