@@ -8,6 +8,7 @@ output:
 #quicknews 
 
 An R package for quickly building multi-lingual web corpora via GoogleNews. The package performs two fairly straightforward functions:  
+
 * It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
 * It scrapes article content from url obtained from the RSS.
 

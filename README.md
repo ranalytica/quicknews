@@ -2,7 +2,9 @@ quicknews
 =========
 
 An R package for quickly building multi-lingual web corpora via GoogleNews. The package performs two fairly straightforward functions:
-\* It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters. \* It scrapes article content from url obtained from the RSS.
+
+-   It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
+-   It scrapes article content from url obtained from the RSS.
 
 Final output is a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe, which includes article metadata and the full text for each article (represented as a single row). Output can subsequently be annotated using `spacyr` or `cleanNLP`.
 
@@ -47,8 +49,8 @@ es_us_business_meta%>%
     ## 6  15 Mar 2018              eltiempo.com
     ## 7  15 Mar 2018            economiahoy.mx
     ## 8  15 Mar 2018         es.dailyforex.com
-    ## 9  15 Mar 2018          elespectador.com
-    ## 10 15 Mar 2018            economiahoy.mx
+    ## 9  15 Mar 2018            economiahoy.mx
+    ## 10 15 Mar 2018          elespectador.com
     ## 11 15 Mar 2018             forbes.com.mx
     ## 12 15 Mar 2018      cincodias.elpais.com
     ## 13 15 Mar 2018      economiaynegocios.cl
@@ -68,8 +70,8 @@ es_us_business_meta%>%
     ## 6                                 Analistas temen que el caso de Qualcomm impacte a Silicon Valley
     ## 7                                Se filtran las audiencias de Amazon Prime Video en Estados Unidos
     ## 8                        Votaciones del Senado de EE.UU. Para facilitar las regulaciones bancarias
-    ## 9                                       Caída de producción de crudo en Venezuela causaría déficit
-    ## 10     ¿Tienen los Tesla problemas de calidad? El 40% de sus piezas originales necesita reparación
+    ## 9      ¿Tienen los Tesla problemas de calidad? El 40% de sus piezas originales necesita reparación
+    ## 10                                      Caída de producción de crudo en Venezuela causaría déficit
     ## 11                                    El blockchain podría colaborar en el combate a la corrupción
     ## 12  Audi se recupera del 'dieselgate' y eleva su beneficio neto un 68,4%, hasta los 3.479 millones
     ## 13         Zurich negocia compra de EuroAmerica y alcanzaría el segundo lugar en rentas vitalicias
@@ -97,8 +99,8 @@ paste0(substr(es_us_business_corpus$text,1,55),"...")
 ```
 
     ##  [1] "El \"preocupante\" hallazgo de partículas de plástico en ..."
-    ##  [2] " -4,200$ 16:25:03 Los mejores programas de televisión d..."  
-    ##  [3] "+0,20% +0,65 Tesla continúa inmersa en su particular ba..."  
+    ##  [2] " -5,490$ 16:32:55 Los mejores programas de televisión d..."  
+    ##  [3] "-0,16% -0,53 Tesla continúa inmersa en su particular ba..."  
     ##  [4] "UF: 26.966,89 IPC: 0,00% En intensas tratativas están l..."  
     ##  [5] "Por:REDACCIÓN TECNÓSFERA* 15 de marzo 2018 , 09:52 a.m...."  
     ##  [6] "Fecha de publicación: 2018-03-15 Cierre de Toys R Us: d..."  
