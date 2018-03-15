@@ -2,13 +2,9 @@ quicknews
 =========
 
 An R package for quickly building multi-lingual web corpora via GoogleNews. The package performs two fairly straightforward functions:
+\* It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters. \* It scrapes article content from url obtained from the RSS.
 
--   It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
--   It extracts/scrapes article content from url included in metadata.
-
-The latter returns a data frame, which includes the metadata (for all successfully scraped texts), along with the full text for each article (represented as a single row), ie, a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe.
-
-The output can subsequently be annotated using `spacyr` or `cleanNLP`.
+Final output is a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe, which includes article metadata and the full text for each article (represented as a single row). Output can subsequently be annotated using `spacyr` or `cleanNLP`.
 
 Package functionality is dependent on the `boilerpipeR`, `xml2`, and `RCurl` packages.
 
@@ -42,76 +38,78 @@ es_us_business_meta%>%
   select(date:title)
 ```
 
-    ##           date                  source
-    ## 1  13 Mar 2018         telemundo52.com
-    ## 2  14 Mar 2018      mundohispanico.com
-    ## 3  14 Mar 2018            eltiempo.com
-    ## 4  14 Mar 2018     eleconomista.com.mx
-    ## 5  14 Mar 2018       elnuevoherald.com
-    ## 6  14 Mar 2018     eleconomista.com.mx
-    ## 7  14 Mar 2018       hoylosangeles.com
-    ## 8  14 Mar 2018       elnuevoherald.com
-    ## 9  14 Mar 2018          economiahoy.mx
-    ## 10 14 Mar 2018     aeronoticias.com.pe
-    ## 11 13 Mar 2018     laprensagrafica.com
-    ## 12 14 Mar 2018         centrotampa.com
-    ## 13 14 Mar 2018 noticieros.televisa.com
-    ## 14 14 Mar 2018            latribuna.hn
-    ## 15 14 Mar 2018     elfinanciero.com.mx
-    ## 16 14 Mar 2018         lanacion.com.ar
-    ## 17 14 Mar 2018     elfinanciero.com.mx
-    ## 18 14 Mar 2018           elcomercio.pe
-    ## 19 14 Mar 2018     elobservador.com.uy
-    ## 20 14 Mar 2018            expansion.mx
-    ##                                                                                                           title
-    ## 1                                        United admite que perrito murió por encerrarlo con el equipaje de mano
-    ## 2                                                Walmart ampliará su negocio de entrega de comida a 800 tiendas
-    ## 3                                                             Lío en Colombia hace descolgar la acción de Cémex
-    ## 4               Dow Jones pierde más de 250 puntos a media sesión por nueva preocupación a una guerra comercial
-    ## 5                                            Casi 200 personas arrestadas en operativo encubierto en la Florida
-    ## 6                                            Mexicanos reservan boletos de avión casi dos meses antes de viajar
-    ## 7                                           El volante de 1,3 millones de vehículos de Ford se puede desprender
-    ## 8                                                  Wall Street abre con alza mientras las tecnológicas repuntan
-    ## 9                                         Ley Fintech abrirá las puertas del crédito a personas no bancarizadas
-    ## 10                                                     El Boeing 737 obtiene nuevamente Récord Mundial Guinness
-    ## 11 ¿Cómo fabricar una casa con impresora 3D en El Salvador?: 5 datos para entender esta tecnología de impresión
-    ## 12                                     Un empleado público fue arrestado por producir moneda virtual en Florida
-    ## 13                                           OPEP estima más suministro de petróleo por rivales pese a recortes
-    ## 14                                                           Los viajeros dejan más de $714 millones en divisas
-    ## 15                                                      El dólar se vende en 18.90 pesos en ventanilla bancaria
-    ## 16                            Solo nueve empresas argentinas están entre las 100 que más crecieron de la región
-    ## 17                                         Cofece pide eliminar monopolio de turbosina en aeropuertos mexicanos
-    ## 18                                                  China fija multa récord a empresa por manipulación bursátil
-    ## 19                                          Oddone: lineamientos salariales no aseguran resultados en el empleo
-    ## 20                                                          Este es el plan de La Costeña por su 95 aniversario
+    ##           date                    source
+    ## 1  15 Mar 2018   estrategiaynegocios.net
+    ## 2  15 Mar 2018                   bbc.com
+    ## 3  15 Mar 2018                     df.cl
+    ## 4  15 Mar 2018       americaeconomia.com
+    ## 5  14 Mar 2018                  cnet.com
+    ## 6  15 Mar 2018              eltiempo.com
+    ## 7  15 Mar 2018            economiahoy.mx
+    ## 8  15 Mar 2018         es.dailyforex.com
+    ## 9  15 Mar 2018          elespectador.com
+    ## 10 15 Mar 2018            economiahoy.mx
+    ## 11 15 Mar 2018             forbes.com.mx
+    ## 12 15 Mar 2018      cincodias.elpais.com
+    ## 13 15 Mar 2018      economiaynegocios.cl
+    ## 14 15 Mar 2018          prensa-latina.cu
+    ## 15 15 Mar 2018            larepublica.co
+    ## 16 15 Mar 2018            coincrispy.com
+    ## 17 15 Mar 2018         diariobitcoin.com
+    ## 18 15 Mar 2018            todotvnews.com
+    ## 19 15 Mar 2018 telemundowashingtondc.com
+    ## 20 15 Mar 2018          tecnologia.press
+    ##                                                                                              title
+    ## 1                                     Cierre de Toys R Us: duro impacto a la industria del juguete
+    ## 2  El "preocupante" hallazgo de partículas de plástico en botellas de agua de 11 marcas diferentes
+    ## 3      Singapur es la ciudad más cara para vivir y Santiago de las que más suben en ranking global
+    ## 4                           Precios de importaciones de EE.UU. suben más de lo esperado en febrero
+    ## 5                              La fundadora de la 'startup' de salud Theranos es acusada de fraude
+    ## 6                                 Analistas temen que el caso de Qualcomm impacte a Silicon Valley
+    ## 7                                Se filtran las audiencias de Amazon Prime Video en Estados Unidos
+    ## 8                        Votaciones del Senado de EE.UU. Para facilitar las regulaciones bancarias
+    ## 9                                       Caída de producción de crudo en Venezuela causaría déficit
+    ## 10     ¿Tienen los Tesla problemas de calidad? El 40% de sus piezas originales necesita reparación
+    ## 11                                    El blockchain podría colaborar en el combate a la corrupción
+    ## 12  Audi se recupera del 'dieselgate' y eleva su beneficio neto un 68,4%, hasta los 3.479 millones
+    ## 13         Zurich negocia compra de EuroAmerica y alcanzaría el segundo lugar en rentas vitalicias
+    ## 14                                                Alemania preocupada por posible guerra comercial
+    ## 15            Dólar cae frente al yen por imposición de aranceles y tensiones comerciales globales
+    ## 16     Nuevos criptoactivos respaldados por el petróleo buscan su comercio legal en Estados Unidos
+    ## 17  Miembro del Departamento de Cítricos de Florida fue arrestado por efectuar minería clandestina
+    ## 18                                           Crackle suma nuevas regiones en LatAm con Claro Video
+    ## 19                                  Walmart amplía servicios de entrega de comestibles a domicilio
+    ## 20                                  La plataforma de votación Blockchain de Moscú agrega servicios
 
 ### qnews\_scrape\_web()
 
-The second function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`.
+The second function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`. Ads and and sidebar content have (mostly) been removed using `boilerpipeR`'s ArticleExtractor().
 
 ``` r
 es_us_business_corpus <- es_us_business_meta%>% 
   quicknews::qnews_scrape_web (link_var='link')
 ```
 
-Example text from our new corpus data frame is presented below. As can be noted, not all of the articles retrieved from the RSS feed (n=20) were successfully scraped. Not all websites allow non-Google entities to scrape their sites.
+Example text from our new corpus data frame is presented below. As can be noted, not all of the articles retrieved from the RSS feed (n=20) were successfully scraped -- not all websites allow non-Google entities to scrape their sites.
 
 ``` r
 paste0(substr(es_us_business_corpus$text,1,55),"...")
 ```
 
-    ##  [1] "OPEP estima más suministro de petróleo por rivales pese..."
-    ##  [2] "Un empleado público fue arrestado por producir moneda v..."
-    ##  [3] "Micromecenazgo (Foto:Archivo) Uno de los logros de la l..."
-    ##  [4] "Miami.com Los operadores bursátiles Fred DeMarco y Anth..."
-    ##  [5] "Ordenar Una Copia de Este Artículo 14 de marzo de 2018 ..."
-    ##  [6] "Por:Economía y Negocios 14 de marzo 2018 , 12:11 p.m. L..."
-    ##  [7] "El volante de 1,3 millones de vehículos de Ford se pued..."
-    ##  [8] "Los viajeros dejan más de $714 millones en divisas 14 M..."
-    ##  [9] "Mundo China fija multa récord a empresa por manipulació..."
-    ## [10] "MiMundo Dinero Posted 42 mins ago Apuntando al mundo di..."
-    ## [11] "{[ epigrafe ]} {[ copyright ]} La baja de la inversión ..."
-    ## [12] "Solo nueve empresas argentinas están entre las 100 que ..."
-    ## [13] "Whatsapp realiza un cambio en su función de borrar mens..."
+    ##  [1] "El \"preocupante\" hallazgo de partículas de plástico en ..."
+    ##  [2] " -4,200$ 16:25:03 Los mejores programas de televisión d..."  
+    ##  [3] "+0,20% +0,65 Tesla continúa inmersa en su particular ba..."  
+    ##  [4] "UF: 26.966,89 IPC: 0,00% En intensas tratativas están l..."  
+    ##  [5] "Por:REDACCIÓN TECNÓSFERA* 15 de marzo 2018 , 09:52 a.m...."  
+    ##  [6] "Fecha de publicación: 2018-03-15 Cierre de Toys R Us: d..."  
+    ##  [7] "Alemania preocupada por posible guerra comercial Aleman..."  
+    ##  [8] "Crackle suma nuevas regiones en LatAm con Claro Video T..."  
+    ##  [9] "Audi se recupera del 'dieselgate' y eleva su beneficio ..."  
+    ## [10] "Estados Unidos Precios de importaciones de EE.UU. suben..."  
+    ## [11] "Industria de la tecnología La fundadora de la 'startup'..."  
+    ## [12] "15 Mar 2018 - 8:17 AM Bloomberg. Así lo indicó la Agenc..."  
+    ## [13] "marzo 15, 2018 @ 6:40 am 2018-03-15T06:40:34-0600 2018-..."  
+    ## [14] "Jueves, 15 de marzo de 2018 Se espera que la moneda jap..."  
+    ## [15] "Inicio / Noticias / La plataforma de votación Blockchai..."
 
 Again, output from `qnews_scrape_web` can be piped directly into corpus annotation functions made available in `cleanNLP` or `spacyr`.

@@ -8,13 +8,10 @@ output:
 #quicknews 
 
 An R package for quickly building multi-lingual web corpora via GoogleNews. The package performs two fairly straightforward functions:  
-
 * It extracts metadata for current articles posted on GoogleNews (via RSS) based on user-specified search parameters.
-* It extracts/scrapes article content from url included in metadata.
+* It scrapes article content from url obtained from the RSS.
 
-The latter returns a data frame, which includes the metadata (for all successfully scraped texts), along with the full text for each article (represented as a single row), ie, a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe. 
-
-The output can subsequently be annotated using `spacyr` or `cleanNLP`.
+Final output is a [TIF](https://github.com/ropensci/tif#text-interchange-formats)-compliant corpus dataframe, which includes article metadata and the full text for each article (represented as a single row).  Output can subsequently be annotated using `spacyr` or `cleanNLP`.
 
 Package functionality is dependent on the `boilerpipeR`, `xml2`, and `RCurl` packages. 
 
@@ -55,14 +52,14 @@ es_us_business_meta%>%
 
 ###qnews_scrape_web()
 
-The second function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`.  
+The second function, `qnews_scrape_web`, scrapes text from the web addresses included in the output from `qnews_get_meta`.  Ads and and sidebar content have (mostly) been removed using `boilerpipeR`'s ArticleExtractor().
 
 ```{r}
 es_us_business_corpus <- es_us_business_meta%>% 
   quicknews::qnews_scrape_web (link_var='link')
 ```
 
-Example text from our new corpus data frame is presented below. As can be noted, not all of the articles retrieved from the RSS feed (n=20) were successfully scraped.  Not all websites allow non-Google entities to scrape their sites.  
+Example text from our new corpus data frame is presented below. As can be noted, not all of the articles retrieved from the RSS feed (n=20) were successfully scraped -- not all websites allow non-Google entities to scrape their sites.  
 
 ```{r}
 paste0(substr(es_us_business_corpus$text,1,55),"...")
