@@ -17,7 +17,7 @@ qnews_scrape_web <- function(y,link_var='link') {
     tryCatch(RCurl::getURL(x, .encoding='UTF-8', ssl.verifypeer = FALSE), error=function(e) NULL)})
 
   cleaned <- lapply(raws, function(z) {
-    x <- lapply(z, boilerpipeR::ArticleExtractor)
+    x <- boilerpipeR::ArticleExtractor(z)
     x <- gsub("\\\n"," ",x, perl=TRUE) #Note. Kills text structure.
     gsub("\\\"","\"",x, perl=TRUE)
       })
@@ -32,10 +32,10 @@ qnews_scrape_web <- function(y,link_var='link') {
 
   tif <- tif[nchar(tif$text)>500,]
   tif <- tif[complete.cases(tif),]
-  tif$doc_id <- as.character(seq.int(nrow(tif)))
+  #tif$doc_id <- as.character(seq.int(nrow(tif)))
   tif$date <- as.Date(tif$date, "%d %b %Y")
   tif <- subset(tif,source != 'wsj.com')
-  tif <- tif[, c(ncol(tif),1:(ncol(tif)-1))]
+  #tif <- tif[, c(ncol(tif),1:(ncol(tif)-1))]
 
   return(tif)
 }
