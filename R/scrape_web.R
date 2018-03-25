@@ -9,12 +9,15 @@
 #' @importFrom RCurl getURL
 
 
+
 #' @export
 #' @rdname scrape_web
 qnews_scrape_web <- function(y,link_var='link') {
 
-  raws <- sapply(y[link_var], function (x) {
-    tryCatch(RCurl::getURL(x, .encoding='UTF-8', ssl.verifypeer = FALSE), error=function(e) NULL)})
+raws <- list()
+for (i in 1:nrow(y)) { #sapply() causes problems. ?
+  raws[[i]] <- tryCatch(RCurl::getURL(y[i,link_var], .encoding='UTF-8', ssl.verifypeer = TRUE), error=function(e) paste("no dice"))
+  }
 
   cleaned <- lapply(raws, function(z) {
     x <- boilerpipeR::ArticleExtractor(z)
@@ -32,10 +35,8 @@ qnews_scrape_web <- function(y,link_var='link') {
 
   tif <- tif[nchar(tif$text)>500,]
   tif <- tif[complete.cases(tif),]
-  #tif$doc_id <- as.character(seq.int(nrow(tif)))
   tif$date <- as.Date(tif$date, "%d %b %Y")
   tif <- subset(tif,source != 'wsj.com')
-  #tif <- tif[, c(ncol(tif),1:(ncol(tif)-1))]
 
   return(tif)
 }
