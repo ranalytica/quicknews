@@ -21,7 +21,7 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
 
   cleaned <- lapply(raws, function(z) {
     x <- boilerpipeR::ArticleExtractor(z)
-    x <- gsub("\\\n"," ",x, perl=TRUE) #Note. Kills text structure.
+    x <- gsub("\\\n"," ",x, perl=TRUE) #Note. Kills paragraph structure.
     gsub("\\\"","\"",x, perl=TRUE)
       })
 
@@ -29,14 +29,17 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   tif <- melt(unlist(cleaned),value.name='text') #Uses data.table
   setDT(tif, keep.rownames = TRUE)[]
   colnames(tif)[1] <- 'link'
-  tif <- merge(y,tif,by.x=c(link_var),by.y=c('link'))
-  tif$text <- as.character(tif$text)
-  tif$text <- enc2utf8(tif$text)
 
+  tif <- merge(y,tif,by.x=c(link_var),by.y=c('link'))
+  tif[, text := as.character(text)]
+  tif[, text := enc2utf8(text)]
   tif <- tif[nchar(tif$text)>500,]
   tif <- tif[complete.cases(tif),]
-  tif$date <- as.Date(tif$date, "%d %b %Y")
+  tif[, date := as.Date(tif$date, "%d %b %Y")]
   tif <- subset(tif,source != 'wsj.com')
+  tif[, doc_id := as.character(1:nrow(tif))]
+
+  setcolorder(tif, c('doc_id', setdiff(names(tif), 'doc_id')))
 
   return(tif)
 }
