@@ -30,7 +30,7 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   setDT(tif, keep.rownames = TRUE)#[]
   colnames(tif)[1] <- 'link'
 
-  tif <- merge(y,tif,by.x=c(link_var),by.y=c('link'))
+  tif <- merge(y,tif,by = c('link'))
   tif$text <- as.character(tif$text)
   tif$text <- enc2utf8(tif$text)
 
