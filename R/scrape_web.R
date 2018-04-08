@@ -38,7 +38,7 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   tif <- tif[complete.cases(tif),]
   tif[, date := as.Date(tif$date, "%d %b %Y")]
   tif <- subset(tif,source != 'wsj.com')
-  tif[, doc_id := as.character(1:nrow(tif))]
+  #tif[, doc_id := as.character(1:nrow(tif))]
 
   setcolorder(tif, c('doc_id', setdiff(names(tif), 'doc_id')))
 
