@@ -38,7 +38,7 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   tif <- tif[complete.cases(tif),]
   tif$date <- as.Date(tif$date, "%d %b %Y")
   tif <- subset(tif,source != 'wsj.com')
-  tif$doc_id <- seq.int(nrow(tif))
+  tif$doc_id <- as.character(seq.int(nrow(tif)))
 
   tif[,c(9, 1:8)]
 }
