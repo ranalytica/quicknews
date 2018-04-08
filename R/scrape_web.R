@@ -12,11 +12,11 @@
 
 #' @export
 #' @rdname scrape_web
-qnews_scrape_web <- function(y,link_var='link') {
+qnews_scrape_web <- function(y) {
 
 raws <- list()
 for (i in 1:nrow(y)) { #sapply() causes problems. ?
-  raws[[i]] <- tryCatch(RCurl::getURL(y[i,link_var], .encoding='UTF-8', ssl.verifypeer = TRUE), error=function(e) paste("no dice"))
+  raws[[i]] <- tryCatch(RCurl::getURL(y[i,'link'], .encoding='UTF-8', ssl.verifypeer = TRUE), error=function(e) paste("no dice"))
   }
 
   cleaned <- lapply(raws, function(z) {
@@ -25,12 +25,12 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
     gsub("\\\"","\"",x, perl=TRUE)
       })
 
-  names(cleaned) <- y[[link_var]]
+  names(cleaned) <- y[['link']]
   tif <- melt(unlist(cleaned),value.name='text') #Uses data.table
-  setDT(tif, keep.rownames = TRUE)[]
+  setDT(tif, keep.rownames = TRUE)#[]
   colnames(tif)[1] <- 'link'
 
-  tif <- merge(y,tif,by.x=c(link_var),by.y=c('link'))
+  tif <- y[tif, on=c("link"), nomatch=0]
   tif[, text := as.character(text)]
   tif[, text := enc2utf8(text)]
   tif <- tif[nchar(tif$text)>500,]
