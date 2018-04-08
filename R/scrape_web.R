@@ -40,5 +40,6 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   tif <- subset(tif,source != 'wsj.com')
   tif$doc_id <- as.character(seq.int(nrow(tif)))
 
-  tif[,c(9, 1:8)]
+  tif <- tif[,c(9, 1:8)]
+  return(tif)
 }
