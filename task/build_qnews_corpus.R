@@ -1,66 +1,67 @@
 
 
 library(corpuslingr)
-library(quicknews)
+library(quicknews)#devtools::install_github("jaytimm/quicknews")
 library(udpipe)
 library(tidyverse)
 
-
-topics <- c('nation','world', 'sports', 
-            'science', 'business', 'technology')
-#Probably kill the sports section.  Lots of numbers, junky, etc.
-
-
-#Get news meta.
-
-#Also, there was an additional parameter here ('link_var') that we killed for some reason.
-
-#This can also be a local function.
-meta1 <- lapply(topics, function (x) {
-  quicknews::qnews_get_meta (language="en", country="us", 
-                             type="topic", search=x) %>%
-  quicknews::qnews_scrape_web()  
-}) %>% bind_rows() 
-#Need to add unique doc_ids.
-
+#Local function:
+build_update_corpus <- function(existing_urls=NULL) {
+  lapply(topics, function (x) {
+  quicknews::qnews_get_meta (language="en",
+                             country="us",
+                             type="topic",
+                             search=x) %>%
+    filter(!link %in% existing_urls) %>%
+    quicknews::qnews_scrape_web() }) %>%
+    bind_rows() %>%
+    mutate(doc_id = row_number() + length(existing_urls))
+}
 
 setwd("C:\\Users\\jason\\Google Drive\\GitHub\\packages\\quicknews\\data-raw")
-saveRDS(meta1, 'qnews_tif.rds') #meta & tif as one; most efficient.
+tif_existing <- readRDS('qnews_eg_tif.rds')
+ann_existing <- readRDS('qnews_eg_corpus.rds')
 
+#Set search params
+topics <- c('nation', 'world', 'health',
+            'science', 'business', 'technology',
+            'entertainment')
 
-#These texts also have to be annotated, and outputted.  
-
-#Amounts to: 1. qnews_get_meta(), 2. Compare new meta to existing, 3. If new, qnews_Scrape_web()
-
-existing_urls <- meta1$link #This could be a parameter -- 
-
-meta2 <- lapply(topics, function (x) {
-  quicknews::qnews_get_meta (language="en", 
-                             country="us", 
-                             type="topic", 
-                             search=x) %>% 
-    #'existing_corpus' param. -- a vector specifying URLs comprising ... 
-    filter(!link %in% existing_urls) %>% #Only difference.
-  
-    quicknews::qnews_scrape_web()  
-}) %>% bind_rows() 
-#Need to add doc_ids; will start where meta1 ends.
-
-
-#append meta2 to meta1, then output.
-
-#Clean raw corpus --- clean/Annotate meta2.  
-
-#Output as a BOW per search instance.  --- Or, append to a larger RDS file, which would make more sense.  In both instances, then, we have done away with loads of intermediary csv files.
-
-#Annotate raw corpus
-corpus <- clr_prep_corpus (corpus, hyphenate = TRUE)
-
+#Initialize cleanNLP
 cleanNLP::cnlp_init_udpipe(model_name="english",
-                           feature_flag = FALSE, 
+                           feature_flag = FALSE,
                            parser = "none")
-ann_corpus <- 
-  cleanNLP::cnlp_annotate(corpus$text, 
-                          as_strings = TRUE, 
-                          doc_ids = corpus$doc_id) 
 
+##Build/Update corpus.
+tif_new <- build_update_corpus(existing_urls = tif_existing$link) %>%
+  corpuslingr::clr_prep_corpus (hyphenate = TRUE)
+
+ann_new <-
+  cleanNLP::cnlp_annotate(tif_new$text,
+                          as_strings = TRUE,
+                          doc_ids = tif_new$doc_id)$token %>%
+  corpuslingr::clr_set_corpus(doc_var='id',
+                              token_var='word',
+                              lemma_var='lemma',
+                              tag_var='pos',
+                              pos_var='upos',
+                              sentence_var='sid') %>%
+  bind_rows() %>%
+  corpuslingr::clr_get_freq(agg_var = c('doc_id','token',
+                                        'lemma','tag','pos'),
+                            toupper=TRUE) %>%
+  select(-docf) %>%
+  arrange(as.numeric(doc_id))
+
+##Existing & New.
+tif_new <- rbind(tif_existing, tif_new)
+ann_new <- rbind(ann_existing, ann_new)
+
+
+##Output Meta and Annotated BOWS.
+setwd("C:\\Users\\jason\\Google Drive\\GitHub\\packages\\quicknews\\data-raw")
+saveRDS(tif_new, 'qnews_eg_tif.rds')
+saveRDS(ann_new, 'qnews_eg_corpus.rds')
+
+#devtools::use_data(cdr_slate_corpus, overwrite=TRUE)
+#devtools::use_data(cdr_slate_ann, overwrite=TRUE)
