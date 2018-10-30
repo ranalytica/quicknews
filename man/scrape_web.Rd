@@ -5,7 +5,7 @@
 \alias{qnews_scrape_web}
 \title{Scrape web articles based on metadata obtained via qnews_get_meta().}
 \usage{
-qnews_scrape_web(y, link_var = "link")
+qnews_scrape_web(y)
 }
 \arguments{
 \item{link_var}{Variable containing web addresses.}
