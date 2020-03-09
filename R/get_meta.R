@@ -12,7 +12,11 @@
 
 #' @export
 #' @rdname get_meta
-qnews_get_meta <- function(x,language='en',country='us',type='topstories',search=NULL) {
+qnews_get_meta <- function(x,
+                           language='en',
+                           country='us',
+                           type='topstories',
+                           search=NULL) {
 
   ned <- country
   hl2 <- ""
@@ -43,7 +47,8 @@ qnews_get_meta <- function(x,language='en',country='us',type='topstories',search
   title <- xml2::xml_text(xml2::xml_find_all(doc,"//item/title"))
   link <- xml2::xml_text(xml2::xml_find_all(doc,"//item/link"))
   pubDate <- xml2::xml_text(xml2::xml_find_all(doc,"//item/pubDate"))
-  source <- sub("^htt[a-z]*://(?:www[.])?([^/]*).*$", "\\1", link)
+
+  source <- sub('^.* - ', '', title)
 
   date <- gsub("^.+, ","",pubDate)
   date <- gsub(" [0-9]*:.+$","", date)

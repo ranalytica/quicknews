@@ -14,20 +14,30 @@
 #' @rdname scrape_web
 qnews_scrape_web <- function(y) {
 
-raws <- list()
-for (i in 1:nrow(y)) { #sapply() causes problems. ?
-  raws[[i]] <- tryCatch(RCurl::getURL(y[i,'link'], .encoding='UTF-8', ssl.verifypeer = TRUE), error=function(e) paste("no dice"))
+  raws <- list()
+  for (i in 1:nrow(y)) { #sapply() causes problems. ?
+
+    linker <- httr::GET(y[i,'link'])
+
+    raws[[i]] <- tryCatch(RCurl::getURL(linker$url,
+                                        .encoding='UTF-8',
+                                        ssl.verifypeer = TRUE,
+                                        .opts = RCurl::curlOptions(followlocation = TRUE)
+    ),
+    error=function(e) paste("no dice"))
+
   }
+
 
   cleaned <- lapply(raws, function(z) {
     x <- boilerpipeR::ArticleExtractor(z)
-    x <- gsub("\\\n"," ",x, perl=TRUE) #Note. Kills paragraph structure.
-    gsub("\\\"","\"",x, perl=TRUE)
-      })
+    x <- gsub("\\\n"," ",x, perl=TRUE) #Note. Kills paragraph s,
+  })
 
-  names(cleaned) <- y[['link']]
-  tif <- melt(unlist(cleaned),value.name='text') #Uses data.table
-  setDT(tif, keep.rownames = TRUE)#[]
+  names(cleaned) <- y[['link']]  ## link is a mess.
+
+  tif <- data.table::melt(unlist(cleaned), value.name='text')
+  data.table::setDT(tif, keep.rownames = TRUE)#[]
   colnames(tif)[1] <- 'link'
 
   tif <- merge(y,tif,by = c('link'))
@@ -41,4 +51,4 @@ for (i in 1:nrow(y)) { #sapply() causes problems. ?
   tif$doc_id <- as.character(seq.int(nrow(tif)))
 
   tif[,c(9, 1:8)]
- }
+}
