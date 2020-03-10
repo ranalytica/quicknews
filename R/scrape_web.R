@@ -14,12 +14,13 @@
 #' @rdname scrape_web
 qnews_scrape_web <- function(y) {
 
+
   raws <- list()
   for (i in 1:nrow(y)) { #sapply() causes problems. ?
 
-    linker <- httr::GET(y[i,'link'])
+    #linker <- httr::GET(y[i,'link']) #This was not previously required.
 
-    raws[[i]] <- tryCatch(RCurl::getURL(linker$url,
+    raws[[i]] <- tryCatch(RCurl::getURL(y[i,'link'],
                                         .encoding='UTF-8',
                                         ssl.verifypeer = TRUE,
                                         .opts = RCurl::curlOptions(followlocation = TRUE)
